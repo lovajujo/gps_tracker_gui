@@ -1,16 +1,18 @@
-# This is a sample Python script.
+import tkinter as tk
+from tkinter import filedialog
+import pandas as pd
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+df=""
+def open_file():
+    path=filedialog.askopenfilename()
+    df=pd.read_csv(path, names=range(13), on_bad_lines="skip")
+    label=tk.Label(root, text=df.shape)
+    label.pack()
 
+root = tk.Tk()
+root.geometry("500x500")
+root.title("GPS tracker")
+file_button=tk.Button(text="choose gps log", command=open_file)
+file_button.pack()
+root.mainloop()
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
