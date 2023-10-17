@@ -1,11 +1,8 @@
 import datetime
-
 import numpy as np
 import pandas as pd
-import folium
 from geopy import Point
 from geopy.distance import distance
-import tkintermapview
 
 
 def get_activity_date(df):
