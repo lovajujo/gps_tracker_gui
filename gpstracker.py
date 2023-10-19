@@ -1,4 +1,6 @@
 import datetime
+
+import numpy
 import numpy as np
 import pandas as pd
 from geopy import Point
@@ -34,10 +36,12 @@ def clear_df(df):
 
 
 def calculate_distance(df):
-    df['point'] = df.apply(lambda row: Point(latitude=row['lat_d'], longitude=row['long_d']), axis=1)
+    df['point'] = df[['lat_d', 'long_d']].apply(tuple, axis=1)
     df['point_next'] = df['point'].shift(1)
     df['distance'] = df.apply(
         lambda row: distance(row['point'], row['point_next']).m, axis=1)
+    df['distance'].iloc[0]=numpy.NAN
+    df.drop(columns={'point', 'point_next'}, axis=1, inplace=True)
     return df
 
 
@@ -45,8 +49,9 @@ def calculate_speed(df):
     df['speed'] = df['distance'] / df['time_in_sec'].diff()
     df['pace'] = (1000 / df['distance'] * df['time_in_sec']).rolling(3).mean()
     df['speed_mps'] = df['speed'].rolling(3).mean()
-    df['speed_kmph'] = df['speed_mps'] / 3.6
+    df['speed_kmph'] = df['speed_mps'] * 3.6
     df['speed_mpmin'] = df['speed_kmph'] * 1000 / 60
+    print(df)
 
 
 def decimal_point_pos(c_str):
