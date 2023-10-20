@@ -11,17 +11,34 @@ class GPStracker(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("GPS tracker")
-        self.geometry('800x600')
+        self.geometry('800x500')
+        self.config(bg="#2c2c2c")
         self.df = None
         self.date=None
-
-        # load csv
-        self.file_button = tk.Button(text="Select gps log", command=self.open_file).grid(row=0, column=0, padx=(30,10), pady=(10,10))
         self.selected_activity_type = tk.StringVar("")
         self.selected_activity_type.set("Select activity type")
+
+        def on_enter(e):
+            e.widget.config(bg="white")
+
+        def on_leave(e):
+            e.widget.config(bg="#cccccc")
+
+
+        # load csv
+        file_button = tk.Button(text="Select gps log", bg="#cccccc", activebackground="white", command=self.open_file)
+        file_button.bind('<Enter>', on_enter)
+        file_button.bind('<Leave>', on_leave)
+        file_button.grid(row=0, column=0, padx=(30,10), pady=(10,10))
         options = ("Football", "Running", "Cycling")
-        tk.OptionMenu(self, self.selected_activity_type, *options).grid(row=0, column=1, padx=10, pady=(10,10))
-        tk.Button(text="Show activity", command=self.show_activity).grid(row=0, column=2, padx=10, pady=(10,10))
+        dropdown=tk.OptionMenu(self, self.selected_activity_type, *options)
+        dropdown.config(bg="#cccccc")
+        dropdown["highlightthickness"]=0
+        dropdown.grid(row=0, column=1, padx=10, pady=(10,10))
+        ok_button=tk.Button(text="Show activity", bg="#cccccc", activebackground="white", command=self.show_activity)
+        ok_button.bind('<Enter>', on_enter)
+        ok_button.bind('<Leave>', on_leave)
+        ok_button.grid(row=0, column=2, padx=10, pady=(10,10))
 
 
 
