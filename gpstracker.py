@@ -51,7 +51,6 @@ def calculate_speed(df):
     df['speed_mps'] = df['speed'].rolling(3).mean()
     df['speed_kmph'] = df['speed_mps'] * 3.6
     df['speed_mpmin'] = df['speed_kmph'] * 1000 / 60
-    print(df)
 
 
 def decimal_point_pos(c_str):

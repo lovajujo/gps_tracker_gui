@@ -11,7 +11,7 @@ class GPStracker(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("GPS tracker")
-        self.geometry('800x500')
+        self.geometry('1000x500')
         self.config(bg="#2c2c2c")
         self.df = None
         self.date=None
@@ -19,26 +19,26 @@ class GPStracker(tk.Tk):
         self.selected_activity_type.set("Select activity type")
 
         def on_enter(e):
-            e.widget.config(bg="white")
+            e.widget.config(bg="#cccccc", fg="black")
 
         def on_leave(e):
-            e.widget.config(bg="#cccccc")
+            e.widget.config(bg="#4c4c4c", fg="white")
 
 
         # load csv
-        file_button = tk.Button(text="Select gps log", bg="#cccccc", activebackground="white", command=self.open_file)
+        file_button = tk.Button(text="Select gps log", bg="#4c4c4c",  fg="white",font=("cursive", 12), command=self.open_file)
         file_button.bind('<Enter>', on_enter)
         file_button.bind('<Leave>', on_leave)
-        file_button.grid(row=0, column=0, padx=(30,10), pady=(10,10))
+        file_button.grid(row=0, column=0, padx=(30,10), pady=(10,10), sticky=tk.W)
         options = ("Football", "Running", "Cycling")
         dropdown=tk.OptionMenu(self, self.selected_activity_type, *options)
-        dropdown.config(bg="#cccccc")
+        dropdown.config(bg="#4c4c4c", font=("cursive", 12), fg="white")
         dropdown["highlightthickness"]=0
-        dropdown.grid(row=0, column=1, padx=10, pady=(10,10))
-        ok_button=tk.Button(text="Show activity", bg="#cccccc", activebackground="white", command=self.show_activity)
+        dropdown.grid(row=0, column=1, padx=10, pady=(10,10), sticky=tk.W)
+        ok_button=tk.Button(text="Show activity", bg="#4c4c4c",  fg="white",  font=("cursive", 12),  command=self.show_activity)
         ok_button.bind('<Enter>', on_enter)
         ok_button.bind('<Leave>', on_leave)
-        ok_button.grid(row=0, column=2, padx=10, pady=(10,10))
+        ok_button.grid(row=0, column=2, padx=10, pady=(10,10), sticky=tk.W)
 
 
 
@@ -76,11 +76,26 @@ class GPStracker(tk.Tk):
         else:
             avg_speed = f"{round(self.df['speed_kmph'].mean(), 1)} km/h"
         start_time = pd.to_datetime(self.df.iloc[0].loc['time_in_sec']).strftime('%H:%M:%S')
-        tk.Label(self, text=f"Activity date: {self.date, start_time}").grid(row=1, column=0, columnspan=3, sticky=tk.W, padx=30)
-        tk.Label(self, text=f"Duration: {duration}").grid(row=2, column=0, columnspan=3, sticky=tk.W, padx=30)
-        tk.Label(self, text=f"Distance covered: {distance}").grid(row=3, column=0, columnspan=3, sticky=tk.W, padx=30)
-        tk.Label(self, text=f"Average speed: {avg_speed}").grid(row=4, column=0, columnspan=3, sticky=tk.W, padx=30)
-        tk.Label(self, text=f"Max speed: {max_speed}").grid(row=5, column=0, columnspan=3, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Activity date: ").\
+            grid(row=1, column=0, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12),  fg="white",text=f"{self.date, start_time}")\
+            .grid(row=1, column=2, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"),  fg="white",text="Duration: ")\
+            .grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{duration}")\
+            .grid(row=2, column=2, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Distance covered: ")\
+            .grid(row=3, column=0, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12),  fg="white",text=f"{distance}")\
+            .grid(row=3, column=2, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Average speed: ") \
+            .grid(row=4, column=0, columnspan=2,  sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12),  fg="white",text=f"{avg_speed}")\
+            .grid(row=4, column=2, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"),  fg="white",text="Top speed: ") \
+            .grid(row=5, column=0, columnspan=2,  sticky=tk.W, padx=30)
+        tk.Label(self, bg="#2c2c2c", font=("cursive", 12),  fg="white",text=f"{max_speed}")\
+            .grid(row=5, column=2, columnspan=2, sticky=tk.W, padx=30)
 
     def show_map(self):
         map_plot = tkintermapview.TkinterMapView(self, width=400, height=400, corner_radius=0)
@@ -88,7 +103,7 @@ class GPStracker(tk.Tk):
         map_plot.set_position(self.df['lat_d'].mean(), self.df['long_d'].mean())
         map_plot.set_zoom(12)
         map_plot.set_path(points)
-        map_plot.grid(row=0, column=4, rowspan=10, columnspan=3, padx=30, pady=(30,10))
+        map_plot.grid(row=0, column=4, rowspan=20, columnspan=3, padx=30, pady=(30,10))
 
 
 if __name__ == '__main__':
