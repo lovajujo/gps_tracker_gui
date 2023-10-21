@@ -3,6 +3,10 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 import pandas as pd
 import tkintermapview
+import matplotlib
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+matplotlib.use('agg')
 
 import gpstracker as gt
 
@@ -26,7 +30,8 @@ class GPStracker(tk.Tk):
 
 
         # load csv
-        file_button = tk.Button(text="Select gps log", bg="#4c4c4c",  fg="white",font=("cursive", 12), command=self.open_file)
+        file_button = tk.Button(text="Select gps log", bg="#4c4c4c",  fg="white",
+                                font=("cursive", 12), command=self.open_file)
         file_button.bind('<Enter>', on_enter)
         file_button.bind('<Leave>', on_leave)
         file_button.grid(row=0, column=0, padx=(30,10), pady=(10,10), sticky=tk.W)
@@ -35,7 +40,8 @@ class GPStracker(tk.Tk):
         dropdown.config(bg="#4c4c4c", font=("cursive", 12), fg="white")
         dropdown["highlightthickness"]=0
         dropdown.grid(row=0, column=1, padx=10, pady=(10,10), sticky=tk.W)
-        ok_button=tk.Button(text="Show activity", bg="#4c4c4c",  fg="white",  font=("cursive", 12),  command=self.show_activity)
+        ok_button=tk.Button(text="Show activity", bg="#4c4c4c",  fg="white",
+                            font=("cursive", 12),  command=self.show_activity)
         ok_button.bind('<Enter>', on_enter)
         ok_button.bind('<Leave>', on_leave)
         ok_button.grid(row=0, column=2, padx=10, pady=(10,10), sticky=tk.W)
@@ -46,13 +52,14 @@ class GPStracker(tk.Tk):
         if self.df is None or self.selected_activity_type.get() == "Select activity type":
             messagebox.showerror("Python error","Select file and activity type")
         else:
-            try:
-                self.date=gt.get_activity_date(self.df)
-                self.df=gt.clear_df(self.df)
-                self.show_stats()
-                self.show_map()
-            except:
-                messagebox.showerror("Python error", "Processing failed. Select other file!")
+            #try:
+            self.date=gt.get_activity_date(self.df)
+            self.df=gt.clear_df(self.df)
+            self.show_stats()
+            self.show_map()
+            self.show_speed()
+            #except:
+                #messagebox.showerror("Python error", "Processing failed. Select other file!")
 
 
     def open_file(self):
@@ -103,7 +110,19 @@ class GPStracker(tk.Tk):
         map_plot.set_position(self.df['lat_d'].mean(), self.df['long_d'].mean())
         map_plot.set_zoom(12)
         map_plot.set_path(points)
-        map_plot.grid(row=0, column=4, rowspan=20, columnspan=3, padx=30, pady=(30,10))
+        map_plot.grid(row=1, column=5, rowspan=20, columnspan=3, padx=20)
+
+
+    def show_speed(self):
+        figure=Figure(figsize=(5,2))
+        figure.set_facecolor("#3c3c3c")
+        ax=figure.add_subplot(111)
+        ax.set_title("Speed")
+        ax.set_facecolor("#3c3c3c")
+        matplotlib.rcParams['text.color'] = 'white'
+        plot=FigureCanvasTkAgg(figure,self)
+        plot.get_tk_widget().grid(row=7, column=0, rowspan=15,columnspan=3, padx=30)
+        self.df["speed_kmph"].plot(ax=ax)
 
 
 if __name__ == '__main__':

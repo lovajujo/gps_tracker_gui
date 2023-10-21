@@ -3,7 +3,6 @@ import datetime
 import numpy
 import numpy as np
 import pandas as pd
-from geopy import Point
 from geopy.distance import distance
 
 
@@ -40,7 +39,6 @@ def calculate_distance(df):
     df['point_next'] = df['point'].shift(1)
     df['distance'] = df.apply(
         lambda row: distance(row['point'], row['point_next']).m, axis=1)
-    df['distance'].iloc[0]=numpy.NAN
     df.drop(columns={'point', 'point_next'}, axis=1, inplace=True)
     return df
 
