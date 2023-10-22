@@ -1,6 +1,5 @@
 import datetime
 
-import numpy
 import numpy as np
 import pandas as pd
 from geopy.distance import distance
@@ -29,6 +28,9 @@ def clear_df(df):
     df['long_d'] = df[5].dropna().apply(convert_dms)
     df['time_in_sec'] = df[1].dropna().apply(convert_time)
     df = df.interpolate()
+    df['time']=pd.to_datetime(df['time_in_sec'], unit='s').dt.strftime('%H:%M:%S')
+    df.drop(columns={1,3,4,5,6}, axis=1, inplace=True)
+    df.dropna(inplace=True)
     calculate_distance(df)
     calculate_speed(df)
     return df
@@ -40,15 +42,13 @@ def calculate_distance(df):
     df['distance'] = df.apply(
         lambda row: distance(row['point'], row['point_next']).m, axis=1)
     df.drop(columns={'point', 'point_next'}, axis=1, inplace=True)
+    df.at[0,'distance']=np.nan
     return df
 
 
 def calculate_speed(df):
-    df['speed'] = df['distance'] / df['time_in_sec'].diff()
-    df['pace'] = (1000 / df['distance'] * df['time_in_sec']).rolling(3).mean()
-    df['speed_mps'] = df['speed'].rolling(3).mean()
-    df['speed_kmph'] = df['speed_mps'] * 3.6
-    df['speed_mpmin'] = df['speed_kmph'] * 1000 / 60
+    df['speed'] = (df['distance'] / df['time_in_sec'].diff()).rolling(3).mean()
+    df['speed_kmph'] = df['speed'] * 3.6
 
 
 def decimal_point_pos(c_str):
