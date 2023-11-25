@@ -52,14 +52,14 @@ class GPStracker(tk.Tk):
         if self.df is None or self.selected_activity_type.get() == "Select activity type":
             messagebox.showerror("Python error", "Select file and activity type")
         else:
-            #try:
+            try:
                 self.date = gt.get_activity_date(self.df)
                 self.df = gt.clear_df(self.df)
                 self.show_stats()
                 self.show_map()
                 self.show_speed()
-            #except:
-                #messagebox.showerror("Python error", "Processing failed. Select other file!")
+            except:
+                messagebox.showerror("Python error", "Processing failed. Select other file!")
 
     def open_file(self):
         self.path = filedialog.askopenfilename()
@@ -99,11 +99,8 @@ class GPStracker(tk.Tk):
 
     def calculate_avg_speed(self, duration):
         avg_speed = (self.df['distance'].sum()/1000) / (duration/3600)
-        print(self.df['distance'].sum(), duration)
-        print(avg_speed)
         if self.selected_activity_type.get() == "Football":
             avg_speed = f"{int(avg_speed * 1000 / 60)} meter/min"
-            print(avg_speed)
         elif self.selected_activity_type.get() == "Running":
             seconds = 60 / avg_speed * 60
             td = datetime.timedelta(seconds=seconds)
