@@ -18,6 +18,8 @@ class GPStracker(tk.Tk):
         self.title("GPS tracker")
         self.geometry('1100x500')
         self.config(bg="#2c2c2c")
+        icon=tk.PhotoImage(file="logo.png")
+        self.iconphoto(True, icon)
         self.path = None
         self.df = None
         self.date = None
@@ -31,7 +33,7 @@ class GPStracker(tk.Tk):
             e.widget.config(bg="#4c4c4c", fg="white")
 
         # load csv
-        file_button = tk.Button(text="Select gps log", bg="#4c4c4c", fg="white",
+        file_button = tk.Button(text="Select GPS log", bg="#4c4c4c", fg="white",
                                 font=("cursive", 12), command=self.open_file)
         file_button.bind('<Enter>', on_enter)
         file_button.bind('<Leave>', on_leave)
@@ -46,6 +48,7 @@ class GPStracker(tk.Tk):
         ok_button.bind('<Enter>', on_enter)
         ok_button.bind('<Leave>', on_leave)
         ok_button.grid(row=0, column=2, padx=10, pady=(10, 10), sticky=tk.W)
+        self.stats = tk.Frame(self)
 
     def show_activity(self):
         self.df = pd.read_csv(self.path, names=range(13), on_bad_lines="skip")
@@ -55,6 +58,9 @@ class GPStracker(tk.Tk):
             try:
                 self.date = gt.get_activity_date(self.df)
                 self.df = gt.clear_df(self.df)
+                self.stats.destroy()
+                self.stats = tk.Frame(self, bg="#2c2c2c")
+                self.stats.grid(row=1, column=0, columnspan=2, padx=30)
                 self.show_stats()
                 self.show_map()
                 self.show_speed()
@@ -66,39 +72,39 @@ class GPStracker(tk.Tk):
 
     def show_stats(self):
         d_time = round(self.df['time_in_sec'].iloc[-1] - self.df['time_in_sec'].iloc[0], 2)
-        duration = datetime.timedelta(seconds=d_time)
+        duration = datetime.timedelta(seconds=int(d_time))
         distance = self.df["distance"].sum()
         if distance > 1000:
             distance = f"{round(distance / 1000, 1)} km"
         else:
             distance = f"{int(distance)} m"
-
         max_speed = f"{round(self.df['speed_kmph'].max(), 1)} km/h"
-        avg_speed=self.calculate_avg_speed(d_time)
+        avg_speed = self.calculate_avg_speed(d_time)
 
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Activity started: "). \
-            grid(row=1, column=0, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{self.date} {self.df['time'].iloc[0]}") \
-            .grid(row=1, column=2, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Duration: ") \
-            .grid(row=2, column=0, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{duration}") \
-            .grid(row=2, column=2, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Distance covered: ") \
-            .grid(row=3, column=0, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{distance}") \
-            .grid(row=3, column=2, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Average speed: ") \
-            .grid(row=4, column=0, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{avg_speed}") \
-            .grid(row=4, column=2, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Top speed: ") \
-            .grid(row=5, column=0, columnspan=2, sticky=tk.W, padx=30)
-        tk.Label(self, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{max_speed}") \
-            .grid(row=5, column=2, columnspan=2, sticky=tk.W, padx=30)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Activity started: "). \
+            grid(row=0, column=0, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12), fg="white",
+                 text=f"{self.date} {self.df['time'].iloc[0]}") \
+            .grid(row=0, column=2, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Duration: ") \
+            .grid(row=1, column=0, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{duration}") \
+            .grid(row=1, column=2, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Distance covered: ") \
+            .grid(row=2, column=0, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{distance}") \
+            .grid(row=2, column=2, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Average speed: ") \
+            .grid(row=3, column=0, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{avg_speed}") \
+            .grid(row=3, column=2, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12, "bold"), fg="white", text="Top speed: ") \
+            .grid(row=4, column=0, columnspan=2, sticky=tk.W)
+        tk.Label(self.stats, bg="#2c2c2c", font=("cursive", 12), fg="white", text=f"{max_speed}") \
+            .grid(row=4, column=2, columnspan=2, sticky=tk.W)
 
     def calculate_avg_speed(self, duration):
-        avg_speed = (self.df['distance'].sum()/1000) / (duration/3600)
+        avg_speed = (self.df['distance'].sum() / 1000) / (duration / 3600)
         if self.selected_activity_type.get() == "Football":
             avg_speed = f"{int(avg_speed * 1000 / 60)} meter/min"
         elif self.selected_activity_type.get() == "Running":
@@ -126,7 +132,7 @@ class GPStracker(tk.Tk):
                              'axes.edgecolor': 'w',
                              'xtick.color': 'w',
                              'ytick.color': 'w',
-                             'axes.labelcolor':'w',
+                             'axes.labelcolor': 'w',
                              'figure.facecolor': '#2c2c2c',
                              'grid.linewidth': '0.5'
                              })
