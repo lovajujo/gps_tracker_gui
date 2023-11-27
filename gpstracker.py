@@ -11,7 +11,7 @@ def get_activity_date(df):
 
 def clear_df(df):
     df = df[(df[0] == "$GPRMC") & (df[2] == "A")]
-    df = df[[1, 3, 4, 5, 6, 9]]
+    df = df[[1, 3, 4, 5, 6]]
     df = df.reset_index(drop=True)
     df[1] = np.where(df[1].str.len() != 9, np.nan, df[1])
     df[3] = np.where(df[3].str.len() != 10, np.nan, df[3])
@@ -38,11 +38,11 @@ def clear_df(df):
 
 def calculate_distance(df):
     df['point'] = df[['lat_d', 'long_d']].apply(tuple, axis=1)
-    df['point_next'] = df['point'].shift(1)
+    df['point_previous'] = df['point'].shift(1)
     df['distance'] = df.apply(
-        lambda row: distance(row['point'], row['point_next']).m, axis=1)
-    df.drop(columns={'point', 'point_next'}, axis=1, inplace=True)
-    df.at[0,'distance']=np.nan
+        lambda row: distance(row['point'], row['point_previous']).m, axis=1)
+    df.at[0,'distance']=0
+    df.drop(columns={'point', 'point_previous'}, axis=1, inplace=True)
     return df
 
 
