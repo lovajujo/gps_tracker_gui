@@ -30,9 +30,9 @@ def clear_df(df):
     df = df.interpolate()
     df['time']=pd.to_datetime(df['time_in_sec'], unit='s').dt.strftime('%H:%M:%S')
     df.drop(columns={1,3,4,5,6}, axis=1, inplace=True)
-    df.dropna(inplace=True)
     calculate_distance(df)
     calculate_speed(df)
+    df.dropna(inplace=True)
     return df
 
 
